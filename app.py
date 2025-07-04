@@ -33,12 +33,16 @@ Tekst do redakcji:
 Wygeneruj gotowy tekst zgodny z powyższymi zasadami.
 """
 
-    response = client.chat.completions.create(
-        model="gpt-4",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.7,
-    )
-    return response.choices[0].message.content
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7,
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"Błąd API: {e}"
+
 
 st.set_page_config(page_title="Redaktor AI", layout="centered")
 st.title("📝 Redaktor AI")
