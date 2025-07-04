@@ -5,10 +5,9 @@ from openai import OpenAI
 
 # Wczytanie klucza API z .env lub sekretów Streamlit Cloud
 load_dotenv()
+client = OpenAI()  # Automatycznie pobiera OPENAI_API_KEY
 
-# Inicjalizacja klienta OpenAI (klucz pobierany automatycznie z OPENAI_API_KEY)
-client = OpenAI()
-
+# Wczytaj zasady dla wybranej platformy (jeśli chcesz korzystać z plików .txt)
 def load_prompt(platform: str) -> str:
     try:
         with open(f"prompts/{platform}.txt", "r", encoding="utf-8") as f:
@@ -16,7 +15,8 @@ def load_prompt(platform: str) -> str:
     except FileNotFoundError:
         return ""
 
-def generate_output(user_text: str, rules: str) -> str:
+# Główna funkcja do generowania tekstu
+def generate_output(user_text: str, tone_level: int, use_emojis: bool, temperature: float) -> str:
     prompt = f"""
 Jesteś redaktorem mediów społecznościowych Zamku Królewskiego w Warszawie. Twoim zadaniem jest tworzenie angażujących postów w stylu tej instytucji – łącząc kulturę, historię, edukację i emocje.
 
@@ -27,12 +27,17 @@ Tekst do redakcji:
 {user_text}
 ---
 
-Wymagania:
+Wymagania dodatkowe:
+- Poziom powagi posta (1–10): {tone_level}
+- Czy używać emotikonek: {"tak" if use_emojis else "nie"}
+
+Zasady:
 
 1. **Styl i ton wypowiedzi:**
-   - Półformalny, przystępny, elegancki, z emocjonalnym zaangażowaniem.
+   - Półformalny, przystępny, elegancki, z emocjonalnym zaangażowaniem – dostosuj powagę wypowiedzi do poziomu {tone_level}/10.
    - Używaj pierwszej osoby liczby mnogiej („Cieszymy się…”, „Zapraszamy…”).
    - Dodaj nutkę zachwytu, dumy lub ciekawości – bez patosu.
+   - {"Możesz dodać 1–2 pasujące emoji." if use_emojis else "Nie używaj emotikonek."}
    - Możesz użyć lekkiego humoru lub pytania do odbiorców.
 
 2. **Struktura posta:**
@@ -42,7 +47,7 @@ Wymagania:
 
 3. **Język i słownictwo:**
    - Wpleć słownictwo typowe dla kultury i historii (np. „dziedzictwo”, „kolekcja”, „scenografia”, „emocje”, „dzieło”).
-   - Nie używaj skrótów młodzieżowych; możesz dodać 1–2 pasujące emoji.
+   - Unikaj skrótów młodzieżowych.
    - Dopuszczalne słownictwo specjalistyczne, ale tylko w zrozumiałym kontekście.
 
 4. **Wzmianki:**
@@ -54,8 +59,6 @@ Długość posta: do 1000 znaków.
 Format: 2–4 akapity.  
 Platformy docelowe: Facebook, Instagram.
 
-
-
 Wygeneruj gotowy tekst zgodny z powyższymi zasadami.
 """
 
@@ -63,28 +66,31 @@ Wygeneruj gotowy tekst zgodny z powyższymi zasadami.
         response = client.chat.completions.create(
             model="gpt-4",
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.7,
+            temperature=temperature,
         )
         return response.choices[0].message.content
     except Exception as e:
         return f"Błąd API: {e}"
 
-
+# Konfiguracja aplikacji Streamlit
 st.set_page_config(page_title="Redaktor AI", layout="centered")
 st.title("📝 Redaktor AI")
 
+# Interfejs użytkownika
 platform = st.selectbox("Wybierz platformę docelową", ["facebook", "instagram", "newsletter"])
 user_text = st.text_area("Wklej surowy tekst lub notatkę:")
 
+tone_level = st.slider("Jak poważny ma być post?", min_value=1, max_value=10, value=5)
+use_emojis = st.checkbox("Użyć emotikonek w poście?")
+creativity = st.slider("Kreatywność (temperatura)", min_value=1, max_value=10, value=7)
+temperature = creativity / 10  # Przekładamy 1–10 na 0.1–1.0
+
+# Przycisk do wygenerowania posta
 if st.button("Zredaguj tekst"):
     if not user_text.strip():
         st.warning("Proszę wprowadzić tekst do redakcji.")
     else:
-        rules = load_prompt(platform)
-        if not rules:
-            st.error(f"Brak zasad redakcyjnych dla platformy '{platform}'.")
-        else:
-            with st.spinner("Redaguję tekst..."):
-                output = generate_output(user_text, rules)
-                st.success("Gotowy tekst:")
-                st.text_area("Wynik:", value=output, height=300)
+        with st.spinner("Redaguję tekst..."):
+            output = generate_output(user_text, tone_level, use_emojis, temperature)
+            st.success("Gotowy tekst:")
+            st.text_area("Wynik:", value=output, height=300)
