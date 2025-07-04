@@ -88,7 +88,8 @@ if st.button("Zredaguj tekst"):
 
 if st.session_state.output_text:
     st.success("Gotowy tekst:")
-    st.text_area("Wynik:", value=st.session_state.output_text, height=300, key="generated_text", disabled=True)
+    edited_text = st.text_area("Wynik:", value=st.session_state.output_text, height=300, key="generated_text")
+
 
 
 
