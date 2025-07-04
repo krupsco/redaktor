@@ -7,7 +7,11 @@ from openai import OpenAI
 load_dotenv()
 
 # Inicjalizacja klienta OpenAI (klucz pobierany automatycznie z OPENAI_API_KEY)
-client = OpenAI()
+client = OpenAI(
+    api_key="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",  # Twój klucz project-scoped
+    organization="org-dcXT7Guyv3r2UHaNdkrWgvKW",  # ID organizacji (z panelu OpenAI)
+    project="proj_XljYMYTZZCEsvxGWxmWnFRin"       # ID projektu (z panelu OpenAI)
+)
 
 def load_prompt(platform: str) -> str:
     try:
