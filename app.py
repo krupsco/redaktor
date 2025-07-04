@@ -88,7 +88,7 @@ if st.button("Zredaguj tekst"):
 
 if st.session_state.output_text:
     st.success("Gotowy tekst:")
-    st.text_area("Wynik:", value=st.session_state.output_text, height=300, key="generated_text")
+    st.session_state.output_text = st.text_area("Wynik:", value=st.session_state.output_text, height=300, key="generated_text")
 
     if not st.session_state.finalized:
         feedback = st.text_area("Czy chcesz dodać poprawki redakcyjne? Opisz je tutaj:", key="feedback")
@@ -106,7 +106,7 @@ if st.session_state.output_text:
                         temperature=temperature,
                     )
                     st.session_state.output_text = revised_response.choices[0].message.content
-                    st.session_state.finalized = True
+                    st.session_state.finalized = False
                     st.success("Poprawki uwzględnione.")
                 except Exception as e:
                     st.error(f"Błąd API: {e}")
