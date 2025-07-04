@@ -4,14 +4,10 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 # Wczytanie klucza API z .env lub sekretów Streamlit Cloud
-# load_dotenv()
+load_dotenv()
 
 # Inicjalizacja klienta OpenAI (klucz pobierany automatycznie z OPENAI_API_KEY)
-client = OpenAI(
-    api_key="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",  # Twój klucz project-scoped
-    organization="org-dcXT7Guyv3r2UHaNdkrWgvKW",  # ID organizacji (z panelu OpenAI)
-    project="proj_XljYMYTZZCEsvxGWxmWnFRin"       # ID projektu (z panelu OpenAI)
-)
+client = OpenAI()
 
 def load_prompt(platform: str) -> str:
     try:
