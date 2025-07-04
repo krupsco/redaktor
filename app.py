@@ -1,15 +1,4 @@
-import streamlit as st
-import os
-from dotenv import load_dotenv
-from openai import OpenAI
-
-# Wczytaj klucz API
-load_dotenv()
-client = OpenAI()
-
-# Funkcja główna
 def generate_output(user_text: str, tone_level: int, use_emojis: bool, temperature: float, char_limit: int, post_type: str) -> str:
-    # Instrukcja zależna od typu posta
     if post_type == "Wydarzenie":
         type_instruction = "Skup się na zaproszeniu na wydarzenie. Podkreśl datę, miejsce i dlaczego warto wziąć udział."
     elif post_type == "Sprzedażowy":
@@ -70,36 +59,8 @@ Wygeneruj gotowy tekst zgodny z powyższymi zasadami.
             messages=[{"role": "user", "content": prompt}],
             temperature=temperature,
         )
-        return response.choices[0].message.content
+        result = response.choices[0].message.content
+        log_prompt_and_result(prompt, result)  # <-- Zapisz do logu
+        return result
     except Exception as e:
         return f"Błąd API: {e}"
-
-# --------------------------
-# INTERFEJS STREAMLIT
-# --------------------------
-
-st.set_page_config(page_title="Redaktor AI", layout="centered")
-st.title("📝 Redaktor AI")
-
-# Główne dane wejściowe
-user_text = st.text_area("Wklej surowy tekst lub notatkę:")
-
-# Nowe opcje: typ posta i długość
-post_type = st.radio("Jaki to rodzaj posta?", ["Wydarzenie", "Sprzedażowy", "Okazjonalny"])
-char_limit = st.selectbox("Maksymalna długość posta:", [500, 1000, 1500])
-
-# Istniejące opcje: ton, emoji, kreatywność
-tone_level = st.slider("Jak poważny ma być post?", min_value=1, max_value=10, value=5)
-use_emojis = st.checkbox("Użyć emotikonek w poście?")
-creativity = st.slider("Kreatywność (temperatura)", min_value=1, max_value=10, value=7)
-temperature = creativity / 10  # konwersja na wartość od 0.1 do 1.0
-
-# Generowanie posta
-if st.button("Zredaguj tekst"):
-    if not user_text.strip():
-        st.warning("Proszę wprowadzić tekst do redakcji.")
-    else:
-        with st.spinner("Redaguję tekst..."):
-            output = generate_output(user_text, tone_level, use_emojis, temperature, char_limit, post_type)
-            st.success("Gotowy tekst:")
-            st.text_area("Wynik:", value=output, height=300)
