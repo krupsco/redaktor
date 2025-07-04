@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 # Wczytanie klucza API z .env lub sekretów Streamlit Cloud
-load_dotenv()
+# load_dotenv()
 
 # Inicjalizacja klienta OpenAI (klucz pobierany automatycznie z OPENAI_API_KEY)
 client = OpenAI(
