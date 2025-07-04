@@ -18,17 +18,43 @@ def load_prompt(platform: str) -> str:
 
 def generate_output(user_text: str, rules: str) -> str:
     prompt = f"""
-Zasady redakcyjne dla tej platformy:
-- Maksymalna długość tekstu to około 600 znaków.
-- Tekst powinien być zwięzły i przejrzysty.
-- Używaj przyjaznego, ale profesjonalnego tonu.
-- Unikaj nadmiernej formalności, pisz w sposób angażujący.
-- Dodaj maksymalnie 3 hashtagi na końcu posta.
-- Zachęcaj do interakcji (np. pytanie do czytelników).
-- Unikaj skomplikowanych zdań i specjalistycznego żargonu.
+Jesteś redaktorem mediów społecznościowych Zamku Królewskiego w Warszawie. Twoim zadaniem jest tworzenie angażujących postów w stylu tej instytucji – łącząc kulturę, historię, edukację i emocje.
 
+Na podstawie poniższych informacji (opis wydarzenia, temat, kontekst), stwórz post na Facebooka i/lub Instagram:
+
+---
 Tekst do redakcji:
 {user_text}
+---
+
+Wymagania:
+
+1. **Styl i ton wypowiedzi:**
+   - Półformalny, przystępny, elegancki, z emocjonalnym zaangażowaniem.
+   - Używaj pierwszej osoby liczby mnogiej („Cieszymy się…”, „Zapraszamy…”).
+   - Dodaj nutkę zachwytu, dumy lub ciekawości – bez patosu.
+   - Możesz użyć lekkiego humoru lub pytania do odbiorców.
+
+2. **Struktura posta:**
+   - **Akapit 1:** Emocjonalne wprowadzenie – kontekst, atmosfera, cel posta.
+   - **Akapit 2–3:** Opis szczegółowy – co, kto, gdzie, dlaczego to ważne.
+   - **Akapit końcowy:** Wezwanie do działania lub zachęta do udziału/zainteresowania. Możesz też dodać ciekawostkę lub pytanie.
+
+3. **Język i słownictwo:**
+   - Wpleć słownictwo typowe dla kultury i historii (np. „dziedzictwo”, „kolekcja”, „scenografia”, „emocje”, „dzieło”).
+   - Nie używaj skrótów młodzieżowych; możesz dodać 1–2 pasujące emoji.
+   - Dopuszczalne słownictwo specjalistyczne, ale tylko w zrozumiałym kontekście.
+
+4. **Wzmianki:**
+   - Jeśli obecne są partnerzy, autorzy, goście – wymień ich z imienia i nazwiska.
+   - Jeśli dotyczy wydarzenia na Zamku – wspomnij o jego lokalizacji.
+   - Jeśli to zaproszenie – dodaj informację o dacie, miejscu lub link.
+
+Długość posta: do 1000 znaków.  
+Format: 2–4 akapity.  
+Platformy docelowe: Facebook, Instagram.
+
+
 
 Wygeneruj gotowy tekst zgodny z powyższymi zasadami.
 """
