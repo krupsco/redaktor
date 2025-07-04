@@ -88,7 +88,9 @@ if st.button("Zredaguj tekst"):
 
 if st.session_state.output_text:
     st.success("Gotowy tekst:")
-    edited_text = st.text_area("Wynik:", value=st.session_state.output_text, height=300, key="generated_text")
+    refresh_key = st.session_state.get('refresh_key', 0)
+    edited_text = st.text_area("Wynik:", value=st.session_state.output_text, height=300, key=f"generated_text_{refresh_key}")
+
 
 
 
@@ -113,3 +115,8 @@ if st.session_state.output_text:
                     st.success("Poprawki uwzględnione.")
                 except Exception as e:
                     st.error(f"Błąd API: {e}")
+        if st.button("Pokaż poprawki"):
+            # Zmień klucz, aby wymusić odświeżenie pola tekstowego
+            st.session_state.refresh_key = st.session_state.refresh_key + 1 if 'refresh_key' in st.session_state else 0
+            st.experimental_rerun()
+
