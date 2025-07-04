@@ -113,10 +113,10 @@ if st.session_state.output_text:
                     st.session_state.output_text = revised_response.choices[0].message.content
                     st.session_state.finalized = False
                     st.success("Poprawki uwzględnione.")
+                    st.session_state.refresh_key = st.session_state.refresh_key + 1 if 'refresh_key' in st.session_state else 0
+                    st.experimental_rerun()
+
                 except Exception as e:
                     st.error(f"Błąd API: {e}")
-        if st.button("Pokaż poprawki"):
-            # Zmień klucz, aby wymusić odświeżenie pola tekstowego
-            st.session_state.refresh_key = st.session_state.refresh_key + 1 if 'refresh_key' in st.session_state else 0
-            st.experimental_rerun()
+
 
