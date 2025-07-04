@@ -1,11 +1,13 @@
 import streamlit as st
-import openai
 import os
 from dotenv import load_dotenv
+from openai import OpenAI
 
 # Wczytanie klucza API z .env lub sekretów Streamlit Cloud
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+
+# Inicjalizacja klienta OpenAI (klucz pobierany automatycznie z OPENAI_API_KEY)
+client = OpenAI()
 
 def load_prompt(platform: str) -> str:
     try:
@@ -25,12 +27,12 @@ Tekst do redakcji:
 Wygeneruj gotowy tekst zgodny z powyższymi zasadami.
 """
 
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4o",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.7,
     )
-    return response["choices"][0]["message"]["content"]
+    return response.choices[0].message.content
 
 st.set_page_config(page_title="Redaktor AI", layout="centered")
 st.title("📝 Redaktor AI")
