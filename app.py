@@ -15,7 +15,6 @@ def load_main_prompt():
         return ""
 
 # Funkcja do generowania posta
-
 def generate_output(user_text: str, tone_level: int, use_emojis: bool, temperature: float, char_limit: int, post_type: str) -> str:
     type_instruction = {
         "Wydarzenie": "Skup się na zaproszeniu na wydarzenie. Podkreśl datę, miejsce i dlaczego warto wziąć udział.",
@@ -63,7 +62,15 @@ Wygeneruj gotowy tekst zgodny z powyższymi zasadami.
 st.set_page_config(page_title="Redaktor AI", layout="centered")
 st.title("Zamkowy Redaktor SM")
 
-# Główne dane wejściowe
+# Inicjalizacja zmiennych sesji
+if 'output_text' not in st.session_state:
+    st.session_state.output_text = ""
+if 'finalized' not in st.session_state:
+    st.session_state.finalized = False
+if 'refresh_key' not in st.session_state:
+    st.session_state.refresh_key = 0
+
+# Dane wejściowe
 user_text = st.text_area("Wklej surowy tekst lub notatkę:")
 
 post_type = st.radio("Jaki to rodzaj posta?", ["Wydarzenie", "Sprzedażowy", "Okazjonalny"])
@@ -73,10 +80,7 @@ use_emojis = st.checkbox("Użyć emotikonek w poście?")
 creativity = st.slider("Kreatywność (temperatura)", min_value=1, max_value=10, value=7)
 temperature = creativity / 10
 
-if 'output_text' not in st.session_state:
-    st.session_state.output_text = ""
-    st.session_state.finalized = False
-
+# Generowanie nowego tekstu
 if st.button("Zredaguj tekst"):
     if not user_text.strip():
         st.warning("Proszę wprowadzić tekst do redakcji.")
@@ -85,18 +89,23 @@ if st.button("Zredaguj tekst"):
             output = generate_output(user_text, tone_level, use_emojis, temperature, char_limit, post_type)
             st.session_state.output_text = output
             st.session_state.finalized = False
+            # Zresetuj klucz odświeżania, by wymusić przeładowanie pola
+            st.session_state.refresh_key += 1
 
+# Wyświetlanie wygenerowanego tekstu i możliwość edycji
 if st.session_state.output_text:
     st.success("Gotowy tekst:")
-    refresh_key = st.session_state.get('refresh_key', 0)
-    edited_text = st.text_area("Wynik:", value=st.session_state.output_text, height=300, key=f"generated_text_{refresh_key}")
-
-
-
-
+    edited_text = st.text_area(
+        "Wynik:", 
+        value=st.session_state.output_text, 
+        height=300, 
+        key=f"generated_text_{st.session_state.refresh_key}"
+    )
+    st.session_state.output_text = edited_text  # aktualizacja tekstu jeśli użytkownik ręcznie zmieni
 
     if not st.session_state.finalized:
         feedback = st.text_area("Czy chcesz dodać poprawki redakcyjne? Opisz je tutaj:", key="feedback")
+
         if st.button("Uwzględnij poprawki") and feedback.strip():
             with st.spinner("Wprowadzam poprawki..."):
                 try:
@@ -113,18 +122,11 @@ if st.session_state.output_text:
                     st.session_state.output_text = revised_response.choices[0].message.content
                     st.session_state.finalized = False
                     st.success("Poprawki uwzględnione.")
-                    
-                    st.session_state.refresh_key = st.session_state.refresh_key + 1 if 'refresh_key' in st.session_state else 0
-                    st.session_state.should_rerun = True  # ustaw flagę
-                    
+                    # Zwiększ klucz odświeżania, by wymusić odświeżenie pola tekstowego
+                    st.session_state.refresh_key += 1
                 except Exception as e:
                     st.error(f"Błąd API: {e}")
 
-# poza powyższym blokiem, na końcu skryptu, daj:
-
-if st.session_state.get("should_rerun", False):
-    st.session_state.should_rerun = False
-    st.experimental_rerun()
-
-
-
+    # Przycisk do ręcznego odświeżenia pola z tekstem (np. gdy edycja się nie pokazuje)
+    if st.button("Pokaż poprawki"):
+        st.session_state.refresh_key += 1
