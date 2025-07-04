@@ -1,11 +1,11 @@
 import streamlit as st
 import os
-from dotenv import load_dotenv
+
 from openai import OpenAI
 
 # Wczytaj klucz API
-load_dotenv()
-client = OpenAI()
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Funkcja główna
 def generate_output(user_text: str, tone_level: int, use_emojis: bool, temperature: float, char_limit: int, post_type: str) -> str:
