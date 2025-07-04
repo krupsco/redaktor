@@ -79,7 +79,7 @@ Wygeneruj gotowy tekst zgodny z powyższymi zasadami.
 # --------------------------
 
 st.set_page_config(page_title="Redaktor AI", layout="centered")
-st.title("📝 Redaktor AI")
+st.title("Zamkowy Redaktor SM")
 
 # Główne dane wejściowe
 user_text = st.text_area("Wklej surowy tekst lub notatkę:")
