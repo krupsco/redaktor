@@ -19,7 +19,13 @@ def load_prompt(platform: str) -> str:
 def generate_output(user_text: str, rules: str) -> str:
     prompt = f"""
 Zasady redakcyjne dla tej platformy:
-{rules}
+- Maksymalna długość tekstu to około 600 znaków.
+- Tekst powinien być zwięzły i przejrzysty.
+- Używaj przyjaznego, ale profesjonalnego tonu.
+- Unikaj nadmiernej formalności, pisz w sposób angażujący.
+- Dodaj maksymalnie 3 hashtagi na końcu posta.
+- Zachęcaj do interakcji (np. pytanie do czytelników).
+- Unikaj skomplikowanych zdań i specjalistycznego żargonu.
 
 Tekst do redakcji:
 {user_text}
@@ -28,7 +34,7 @@ Wygeneruj gotowy tekst zgodny z powyższymi zasadami.
 """
 
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.7,
     )
