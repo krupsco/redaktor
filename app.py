@@ -96,29 +96,29 @@ if st.session_state.output_text:
 
 
     if not st.session_state.finalized:
-    feedback = st.text_area("Czy chcesz dodać poprawki redakcyjne? Opisz je tutaj:", key="feedback")
-    if st.button("Uwzględnij poprawki") and feedback.strip():
-        with st.spinner("Wprowadzam poprawki..."):
-            try:
-                instruction = f"Uwzględnij poniższe poprawki do wygenerowanego posta:\n{feedback}"
-                revised_response = client.chat.completions.create(
-                    model="gpt-4",
-                    messages=[
-                        {"role": "system", "content": "Jesteś redaktorem mediów społecznościowych."},
-                        {"role": "user", "content": st.session_state.output_text},
-                        {"role": "user", "content": instruction}
-                    ],
-                    temperature=temperature,
-                )
-                st.session_state.output_text = revised_response.choices[0].message.content
-                st.session_state.finalized = False
-                st.success("Poprawki uwzględnione.")
-                
-                st.session_state.refresh_key = st.session_state.refresh_key + 1 if 'refresh_key' in st.session_state else 0
-                st.session_state.should_rerun = True  # ustaw flagę
-                
-            except Exception as e:
-                st.error(f"Błąd API: {e}")
+        feedback = st.text_area("Czy chcesz dodać poprawki redakcyjne? Opisz je tutaj:", key="feedback")
+        if st.button("Uwzględnij poprawki") and feedback.strip():
+            with st.spinner("Wprowadzam poprawki..."):
+                try:
+                    instruction = f"Uwzględnij poniższe poprawki do wygenerowanego posta:\n{feedback}"
+                    revised_response = client.chat.completions.create(
+                        model="gpt-4",
+                        messages=[
+                            {"role": "system", "content": "Jesteś redaktorem mediów społecznościowych."},
+                            {"role": "user", "content": st.session_state.output_text},
+                            {"role": "user", "content": instruction}
+                        ],
+                        temperature=temperature,
+                    )
+                    st.session_state.output_text = revised_response.choices[0].message.content
+                    st.session_state.finalized = False
+                    st.success("Poprawki uwzględnione.")
+                    
+                    st.session_state.refresh_key = st.session_state.refresh_key + 1 if 'refresh_key' in st.session_state else 0
+                    st.session_state.should_rerun = True  # ustaw flagę
+                    
+                except Exception as e:
+                    st.error(f"Błąd API: {e}")
 
 # poza powyższym blokiem, na końcu skryptu, daj:
 
